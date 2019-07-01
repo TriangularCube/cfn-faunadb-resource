@@ -1,0 +1,22 @@
+{
+    "name": "cfn-faunadb-resource",
+    "version": "0.0.1",
+    "description": "FaunaDB Custom Resource for AWS in Serverless",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TriangularCube/cfn-faunadb-resource.git"
+    },
+    "author": "Michael Liu",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/TriangularCube/cfn-faunadb-resource/issues"
+    },
+    "homepage": "https://github.com/TriangularCube/cfn-faunadb-resource#readme",
+    "devDependencies": {
+        "serverless": "^1.46.1"
+    },
+    "dependencies": {
+        "cfn-lambda": "^4.0.0"
+    }
+}
