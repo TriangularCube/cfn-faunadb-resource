@@ -1,0 +1,38 @@
+service: faunadb-custom-resource-lambda
+
+plugins:
+    - serverless-deployment-bucket
+
+provider:
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+    region: us-west-2
+    deploymentBucket:
+        name: faunadb-resource-bucket
+        serverSideEncryption: AES256
+
+functions:
+    fauna:
+        handler: fauna.handler
+        # TODO
+        # memorySize: 256
+
+resources:
+#    Resources:
+#        # Our custom resource
+#        FaunaDB:
+#            Type: Custom::FaunaDB
+#            Properties:
+#                ServiceToken:
+#                    Fn::GetAtt:
+#                        - FaunaLambdaFunction
+#                        - Arn
+    Outputs:
+        FaunaResourceArn:
+            Value:
+                Fn::GetAtt:
+                    - FaunaLambdaFunction
+                    - Arn
+            Export:
+                Name: fauna-custom-resource-lambda-arn
