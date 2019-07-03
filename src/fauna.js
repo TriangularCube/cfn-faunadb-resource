@@ -1,13 +1,43 @@
 const cfnLambda = require( 'cfn-lambda' );
 
-module.exports.handler = cfnLambda({
+const createHandler = async( params ) => {
 
-    AsyncCreate: createHandler
+    console.log( params.tables );
 
-});
-
-const createHandler = async( cfnRequestParams ) => {
-
-
+    // Placeholder Return
+    return {
+        PhysicalResourceId: 'Hohoho',
+        FnGetAttrsDataObj: {
+            tables: params.tables
+        }
+    }
 
 };
+
+const updateHandler = async( params ) => {
+
+    console.log( params );
+
+    return {
+        PhysicalResourceId: 'Hohoho'
+    }
+
+};
+
+const deleteHandler = async( params ) => {
+
+    console.log( params );
+
+    return {
+        PhysicalResourceId: 'Hohoho'
+    }
+
+};
+
+module.exports.handler = cfnLambda({
+
+    AsyncCreate: createHandler,
+    AsyncUpdate: updateHandler,
+    AsyncDelete: deleteHandler
+
+});

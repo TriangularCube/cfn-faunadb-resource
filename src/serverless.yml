@@ -2,6 +2,7 @@ service: faunadb-custom-resource-lambda
 
 plugins:
     - serverless-deployment-bucket
+    - serverless-plugin-include-dependencies
 
 provider:
     name: aws
@@ -19,6 +20,7 @@ functions:
         # memorySize: 256
 
 resources:
+    Description: The CFN template for deploying the FaunaDB custom resource backing Lambda
 #    Resources:
 #        # Our custom resource
 #        FaunaDB:
