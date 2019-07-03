@@ -2,13 +2,13 @@ const cfnLambda = require( 'cfn-lambda' );
 
 const createHandler = async( params ) => {
 
-    console.log( params.tables );
+    console.log( params.Tables );
 
     // Placeholder Return
     return {
         PhysicalResourceId: 'Hohoho',
         FnGetAttrsDataObj: {
-            tables: params.tables
+            tables: params.Tables
         }
     }
 
