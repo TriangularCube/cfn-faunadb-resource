@@ -1,4 +1,4 @@
-service: faunadb-custom-resource-lambda
+service: faunadb-class-lambda
 
 plugins:
     - serverless-deployment-bucket
@@ -20,7 +20,10 @@ functions:
         # memorySize: 256
 
 resources:
-    Description: The CFN template for deploying the FaunaDB custom resource backing Lambda
+    Description: The SLS template for deploying the FaunaDB custom resource backing Lambda
+
+# The following is a sample of how to use the custom resource in the same Serverles template
+
 #    Resources:
 #        # Our custom resource
 #        FaunaDB:
@@ -30,6 +33,7 @@ resources:
 #                    Fn::GetAtt:
 #                        - FaunaLambdaFunction
 #                        - Arn
+
     Outputs:
         FaunaResourceArn:
             Value:
@@ -37,4 +41,6 @@ resources:
                     - FaunaLambdaFunction
                     - Arn
             Export:
-                Name: fauna-custom-resource-lambda-arn
+                # This is the export name for the Custom Resource Lambda
+                # Change this to what you want to reference from other stacks with Fn::ImportValue
+                Name: fauna-class-lambda-arn

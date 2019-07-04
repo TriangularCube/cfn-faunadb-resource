@@ -1,19 +1,23 @@
 const cfnLambda = require( 'cfn-lambda' );
 
+// The Create Handler
 const createHandler = async( params ) => {
 
-    console.log( params.Tables );
+    console.log( params.ClassName );
+    console.log( params.Indexes );
 
     // Placeholder Return
     return {
         PhysicalResourceId: 'Hohoho',
         FnGetAttrsDataObj: {
-            tables: params.Tables
+            name: params.ClassName
         }
     }
 
 };
 
+
+// The Update Handler
 const updateHandler = async( params ) => {
 
     console.log( params );
@@ -24,6 +28,8 @@ const updateHandler = async( params ) => {
 
 };
 
+
+// The Delete Handler
 const deleteHandler = async( params ) => {
 
     console.log( params );
@@ -34,6 +40,8 @@ const deleteHandler = async( params ) => {
 
 };
 
+
+// The exported Lambda. Uses all three handler in its Async Variety
 module.exports.handler = cfnLambda({
 
     AsyncCreate: createHandler,
