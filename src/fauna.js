@@ -1,4 +1,5 @@
 const cfnLambda = require( 'cfn-lambda' );
+const schema = require( './schema' );
 
 // The Create Handler
 const createHandler = async( params ) => {
@@ -46,6 +47,8 @@ module.exports.handler = cfnLambda({
 
     AsyncCreate: createHandler,
     AsyncUpdate: updateHandler,
-    AsyncDelete: deleteHandler
+    AsyncDelete: deleteHandler,
+
+    Schema: schema
 
 });
