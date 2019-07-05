@@ -1,17 +1,29 @@
 const cfnLambda = require( 'cfn-lambda' );
 const schema = require( './schema' );
 
+const faunadb = require( 'faunadb' );
+
 // The Create Handler
 const createHandler = async( params ) => {
 
+
+
+
+    // DEBUG TODO
     console.log( params.ClassName );
     console.log( params.Indexes );
+
+    let indexNames = [];
+    params.Indexes.map( (element) => {
+        indexNames.push( element.Name );
+    });
 
     // Placeholder Return
     return {
         PhysicalResourceId: 'Hohoho',
         FnGetAttrsDataObj: {
-            name: params.ClassName
+            ClassName: params.ClassName,
+            Indexes: indexNames
         }
     }
 
