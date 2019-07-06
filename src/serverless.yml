@@ -3,6 +3,7 @@ service: faunadb-class-lambda
 plugins:
     - serverless-deployment-bucket
     - serverless-plugin-include-dependencies
+    - serverless-pseudo-parameters
 
 provider:
     name: aws
@@ -12,6 +13,23 @@ provider:
     deploymentBucket:
         name: faunadb-resource-bucket
         serverSideEncryption: AES256
+
+    # This state simply allows for the Lambda to retrieve keys from SSM
+    # Delete if not needed
+    iamRoleStatements:
+        # Allow Get SSM Parameter
+        -   Effect: 'Allow'
+            # NOTE TO SELF: GetParameters =/= GetParameter
+            Action: 'ssm:GetParameter'
+            Resource:
+                # This allows the Lambda to access any key for the account this stack is deployed with
+                - arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/*
+
+        # Allow get KMS key for decrypt
+        -   Effect: 'Allow'
+            Action: 'kms:Decrypt'
+            Resource:
+                - arn:aws:kms:#{AWS::Region}:#{AWS::AccountId}:key/*
 
 functions:
     fauna:

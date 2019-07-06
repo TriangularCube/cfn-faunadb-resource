@@ -37,7 +37,7 @@ module.exports = {
 
         // Whether the above store is encrypted
         KeyParameterSecure:{
-            type: 'boolean'
+            type: 'string'
         },
 
         // Any indexes specified
@@ -72,12 +72,18 @@ module.exports = {
 
                     // Terms for this index
                     Terms: {
-                        type: 'array'
+                        type: 'array',
+                        items: {
+                            type: 'array'
+                        }
                     },
 
                     // Values for this index
                     Values: {
-                        type: 'array'
+                        type: 'array',
+                        items:{
+                            type: 'array'
+                        }
                     }
                 }
             }

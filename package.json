@@ -4,7 +4,8 @@
     "description": "FaunaDB Custom Resource for AWS in Serverless",
     "main": "index.js",
     "scripts": {
-        "deploy": "node ./node_modules/cfn-lambda/deploy.js"
+        "deploy": "node ./node_modules/cfn-lambda/deploy.js",
+        "test": "node ./test/test.js"
     },
     "repository": {
         "type": "git",
@@ -17,9 +18,11 @@
     },
     "homepage": "https://github.com/TriangularCube/cfn-faunadb-resource#readme",
     "devDependencies": {
+        "fauna-shell": "^0.9.3",
         "serverless": "^1.46.1",
         "serverless-deployment-bucket": "^1.1.0",
-        "serverless-plugin-include-dependencies": "^3.2.1"
+        "serverless-plugin-include-dependencies": "^3.2.1",
+        "serverless-pseudo-parameters": "^2.4.0"
     },
     "dependencies": {
         "cfn-lambda": "^4.0.0",
