@@ -56,15 +56,6 @@ module.exports = {
                 required: [
                     'Name'
                 ],
-                // We also require at least one of
-                anyOf: [
-                    {
-                        required: [ 'Terms' ]
-                    },
-                    {
-                        required: [ 'Values' ]
-                    }
-                ],
                 properties: {
                     Name: {
                         type: 'string'
