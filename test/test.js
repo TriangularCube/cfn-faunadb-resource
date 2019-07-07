@@ -8,55 +8,37 @@ async function run( data ){
     const client = new faunadb.Client({ secret: 'fnADSmcJL7ACCd7Uz3WAPh0suv5g6bhLzDSwnqvC' });
     const q = faunadb.query;
 
-    // let res1 = await client.query(
-    //     q.CreateClass({
-    //         name: className
-    //     })
-    // );
 
-    // let result = await client.query(
-    //     q.Do(
-    //         q.CreateIndex({
-    //             name: 'id_index',
-    //             source: q.Class( className ),
-    //             terms: [
-    //                 { field: [ 'data', 'id' ] }
-    //             ]
-    //         }),
-    //         q.CreateIndex({
-    //             name: 'name_index',
-    //             source: q.Class( className ),
-    //             terms: [
-    //                 { field: [ 'data', 'name' ] }
-    //             ]
-    //         }),
-    //         null,
-    //         q.CreateIndex({
-    //             name: 'random_index',
-    //             source: q.Class( className )
-    //         })
-    //     )
-    // );
+    let qArray = [];
 
-    // let result = await client.query(
-    //     q.Delete(
-    //         q.Class( 'TestClass' )
-    //     )
-    // );
+    for( let index of data.Indexes ){
+        let terms = [];
+        if( index.Terms ){
+            for( let term of index.Terms ){
+                terms.push( { field: term } );
+            }
+        }
+
+        let values = [];
+        if( index.Values ){
+            for( let value of index.Values ){
+                values.push( { field: value } );
+            }
+        }
+
+        let query = q.CreateIndex({
+            name: index.Name,
+            source: q.Class( className ),
+            terms: terms,
+            values: values
+        });
+
+        qArray.push( query );
+    }
 
     let result = await client.query(
         q.Do(
-            q.Delete(
-                q.Class( className )
-            ),
-            q.Delete(
-                q.Map(
-                    q.Paginate(
-                        q.Indexes( null )
-                    ),
-                    q.Lambda( 'index', q.Delete( q.Var( 'index' ) ))
-                )
-            )
+            ...qArray
         )
     );
 
@@ -67,7 +49,7 @@ async function run( data ){
 
 
 const data = {
-    ClassName: 'TestClass',
+    ClassName: 'Test',
     Indexes: [
         {
             Name: 'list_by_id',
@@ -79,6 +61,13 @@ const data = {
             Name: 'list_by_name',
             Values: [
                 [ 'data', 'name' ]
+            ]
+        },
+        {
+            Name: 'two_terms',
+            Terms: [
+                [ 'data', 'name' ],
+                [ 'data', 'id' ]
             ]
         }
     ]

@@ -50,37 +50,84 @@ const createHandler = async( params ) => {
     const client = new faunadb.Client({ secret: key });
     const q = faunadb.query;
 
-    // Pull relevant parameters out
+    // Pull class name from param
     const className = params.ClassName;
+
+    await client.query(
+        // Create the class
+        q.CreateClass({
+            name: className
+        })
+    );
+
+    // The above will error out if call can't be created, which means the class was created successfully
+
+    // Fetch the indexes
     const indexes = params.Indexes;
 
-    // Construct some queries in prep for sending to client
-    const termIndexes = null;
-    
+    // Start with an empty array of Index creation queries
+    let indexArray = [];
+    let builtIndexes = [];
 
+    // Iterate through indexes from params
+    for( let index of indexes ){
 
-    let result = await client.query(
-        // Do a number of queries
+        // Get all terms specified
+        let terms = [];
+
+        // If the input has Term entries
+        if( index.Terms ){
+
+            // Iterate over all entries
+            for( let term of index.Terms ){
+
+                // Push a formatted object into the array
+                terms.push( { field: term } );
+
+            }
+        }
+
+        // Do the same thing for Values
+        let values = [];
+
+        if( index.Values ){
+            for( let value of index.Values ){
+                values.push( { field: value } );
+            }
+        }
+
+        // Build the query
+        let query = q.CreateIndex({
+            name: index.Name,
+
+            // We're only supporting index on the newly created class here
+            source: q.Class( className ),
+            terms: terms,
+            values: values
+        });
+
+        // Add the built query into the array
+        indexArray.push( query );
+
+        // Add to the list the built index name for output
+        builtIndexes.push( index.Name );
+
+    }
+
+    await client.query(
+        // Wrapped in a Do expression such that all indexes are created, or the whole thing fails
         q.Do(
-            q.CreateClass({
-                name: className
-            }),
-
+            // Spread the index queries into the Do expression
+            ...indexArray
         )
     );
 
-
-    let indexNames = [];
-    params.Indexes.map( (element) => {
-        indexNames.push( element.Name );
-    });
-
     // Placeholder Return
     return {
-        PhysicalResourceId: 'Hohoho',
+        PhysicalResourceId: 'Fauna Index',
         FnGetAttrsDataObj: {
             ClassName: params.ClassName,
-            Indexes: indexNames
+            Indexes: builtIndexes
         }
     }
 
