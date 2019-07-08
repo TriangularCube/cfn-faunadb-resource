@@ -1,3 +1,6 @@
+// CloudFormation doesn't have Boolean types, so we'll have to extrapolate from Strings
+
+
 module.exports = {
     // The input should be an object (which should always be true coming from AWS
     type: 'object',
@@ -40,8 +43,8 @@ module.exports = {
             type: 'string'
         },
 
-        // Any indexes specified
-        Indexes: {
+        // Any indices specified
+        Indices: {
 
             // Type is an Array
             type: 'array',
@@ -61,19 +64,32 @@ module.exports = {
                         type: 'string'
                     },
 
+                    // Whether this index should have the unique constraint
+                    Unique: {
+                        type: 'string'
+                    },
+
                     // Terms for this index
                     Terms: {
                         type: 'array',
                         items: {
-                            type: 'array'
+                            type: 'array',
+                            items:{
+                                type: 'string'
+                            }
                         }
                     },
 
                     // Values for this index
                     Values: {
                         type: 'array',
+
+                        // Items are all arrays of strings
                         items:{
-                            type: 'array'
+                            type: 'array',
+                            items:{
+                                type: 'string'
+                            }
                         }
                     }
                 }
