@@ -4,7 +4,8 @@
     "description": "FaunaDB Custom Resource for AWS in Serverless",
     "main": "index.js",
     "scripts": {
-        "deploy": "node ./node_modules/cfn-lambda/deploy.js",
+        "deploy": "cd src && sls deploy -v",
+        "cfn-deploy": "node ./node_modules/cfn-lambda/deploy.js",
         "test": "node ./test/test.js"
     },
     "repository": {
