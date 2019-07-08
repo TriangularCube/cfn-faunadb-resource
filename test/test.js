@@ -9,36 +9,28 @@ async function run( data ){
     const q = faunadb.query;
 
 
-    let qArray = [];
+    const indexes = data.Indexes;
 
-    for( let index of data.Indexes ){
-        let terms = [];
-        if( index.Terms ){
-            for( let term of index.Terms ){
-                terms.push( { field: term } );
-            }
-        }
+    let indexQueryArray = [];
+    // let indexesDeleted = [];
 
-        let values = [];
-        if( index.Values ){
-            for( let value of index.Values ){
-                values.push( { field: value } );
-            }
-        }
-
-        let query = q.CreateIndex({
-            name: index.Name,
-            source: q.Class( className ),
-            terms: terms,
-            values: values
-        });
-
-        qArray.push( query );
+    for( let index of indexes ){
+        indexQueryArray.push(
+            q.Delete(
+                q.Index( index.Name )
+            )
+        );
     }
 
-    let result = await client.query(
+    await client.query(
         q.Do(
-            ...qArray
+            ...indexQueryArray
+        )
+    );
+
+    let result = await client.query(
+        q.Delete(
+            q.Class( className )
         )
     );
 
@@ -49,25 +41,18 @@ async function run( data ){
 
 
 const data = {
-    ClassName: 'Test',
+    ClassName: 'users',
     Indexes: [
         {
-            Name: 'list_by_id',
+            Name: 'users_by_displayName',
             Terms: [
-                [ 'data', 'id' ]
+                [ 'data', 'displayName' ]
             ]
         },
         {
-            Name: 'list_by_name',
+            Name: 'users_by_sub',
             Values: [
-                [ 'data', 'name' ]
-            ]
-        },
-        {
-            Name: 'two_terms',
-            Terms: [
-                [ 'data', 'name' ],
-                [ 'data', 'id' ]
+                [ 'data', 'sub' ]
             ]
         }
     ]
@@ -76,5 +61,5 @@ const data = {
 run( data ).then((res) => {
     console.log( `Response is ${ JSON.stringify( res ) }` );
 }).catch(( err ) => {
-    console.error( `Error: ${ JSON.stringify( err.errors() ) }` );
+    console.error( `Error: ${ JSON.stringify( err ) }` );
 });

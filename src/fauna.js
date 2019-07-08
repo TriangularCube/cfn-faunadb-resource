@@ -2,9 +2,10 @@ const cfnLambda = require( 'cfn-lambda' );
 const schema = require( './schema' );
 
 const faunadb = require( 'faunadb' );
+const q = faunadb.query;
 
-// The Create Handler
-const createHandler = async( params ) => {
+// Get the FaunaDB Key from parameters
+const createClient = async ( params ) => {
 
     let key;
 
@@ -47,8 +48,15 @@ const createHandler = async( params ) => {
     }
 
     // First create the Fauna client
-    const client = new faunadb.Client({ secret: key });
-    const q = faunadb.query;
+    return new faunadb.Client({ secret: key });
+
+};
+
+// The Create Handler
+const createHandler = async( params ) => {
+
+    // Create the Fauna Client
+    let client = await createClient( params );
 
     // Pull class name from param
     const className = params.ClassName;
@@ -62,15 +70,22 @@ const createHandler = async( params ) => {
 
     // The above will error out if call can't be created, which means the class was created successfully
 
-    // Fetch the indexes
-    const indexes = params.Indexes;
+    // Fetch the indices
+    const indices = params.Indices;
 
     // Start with an empty array of Index creation queries
-    let indexArray = [];
-    let builtIndexes = [];
+    let indexQueryArray = [];
+    let builtIndices = [];
 
-    // Iterate through indexes from params
-    for( let index of indexes ){
+    // Iterate through indices from params
+    for( let index of indices ){
+
+        let unique = false;
+
+        // If unique property exists, and is true
+        if( params.Unique && ( params.Unique === 'true' || params.Unique === 'True' ) ){
+            unique = true;
+        }
 
         // Get all terms specified
         let terms = [];
@@ -102,32 +117,36 @@ const createHandler = async( params ) => {
 
             // We're only supporting index on the newly created class here
             source: q.Class( className ),
-            terms: terms,
-            values: values
+            unique,
+            terms,
+            values
         });
 
         // Add the built query into the array
-        indexArray.push( query );
+        indexQueryArray.push( query );
 
         // Add to the list the built index name for output
-        builtIndexes.push( index.Name );
+        builtIndices.push( index.Name );
 
     }
 
     await client.query(
-        // Wrapped in a Do expression such that all indexes are created, or the whole thing fails
+        // Wrapped in a Do expression such that all indices are created, or the whole thing fails
         q.Do(
             // Spread the index queries into the Do expression
-            ...indexArray
+            ...indexQueryArray
         )
     );
 
-    // Placeholder Return
+    // TODO Placeholder Return
     return {
-        PhysicalResourceId: 'Fauna Index',
+        // Returning this physical resource ID because Fauna doesn't need replacement for anything
+        PhysicalResourceId: 'FaunaDB Class and Index',
         FnGetAttrsDataObj: {
-            ClassName: params.ClassName,
-            Indexes: builtIndexes
+            Response: JSON.stringify({
+                ClassCreated: className,
+                IndicesCreated: builtIndices
+            })
         }
     }
 
@@ -135,25 +154,65 @@ const createHandler = async( params ) => {
 
 
 // The Update Handler
-const updateHandler = async( params ) => {
+const updateHandler = async( id, params, oldParams ) => {
 
     console.log( params );
 
     return {
-        PhysicalResourceId: 'Hohoho'
+        PhysicalResourceId: 'FaunaDB Class and Index'
     }
 
 };
 
 
 // The Delete Handler
-const deleteHandler = async( params ) => {
+const deleteHandler = async( id, params ) => {
 
-    console.log( params );
+    try{
 
-    return {
-        PhysicalResourceId: 'Hohoho'
+        console.log( params );
+
+        // Create the Fauna Client
+        let client = createClient( params );
+
+        const indices = params.Indices;
+
+        let indexQueryArray = [];
+        // let indicesCreated = [];
+
+        for( let index of indices ){
+            indexQueryArray.push(
+                q.Delete(
+                    q.Index( index.Name )
+                )
+            );
+
+            // indicesDeleted.push( index.Name );
+        }
+
+        await client.query(
+            q.Do(
+                ...indexQueryArray
+            )
+        );
+
+        await client.query(
+            q.Delete(
+                q.Class( params.ClassName )
+            )
+        );
+
+        return {
+            PhysicalResourceId: 'FaunaDB Class and Index',
+            Response: ""
+        }
+    } catch( e ){
+        return {
+            PhysicalResourceId: 'FaunaDB Class and Index',
+            Response: 'Something went wrong'
+        }
     }
+
 
 };
 
