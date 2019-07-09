@@ -21,25 +21,25 @@ const createClient = async ( params ) => {
         const instance = new SSM();
 
         // Default to true unless 'false' or 'False"
-        const notSecure = params.KeyParameterSecure === 'false' || params.getKeyParameterSecure === 'False';
+        const secure = !!params.KeyParameter;
 
         // Get the key from parameter store (inverted notSecure)
-        key = await instance.getParameter({ Name: params.KeyParameter, WithDecryption: !notSecure }).promise();
+        key = await instance.getParameter({ Name: params.KeyParameter, WithDecryption: secure }).promise();
 
         // Guard against wrong config
         switch ( key.Parameter.Type ) {
             case "String":
-                if( !notSecure ){
+                if( secure ){
                     throw new Error( 'Key parameter specified to be secure, yet SSM parameter returned a normal string' );
                 }
                 break;
             case "SecureString":
-                if( notSecure ){
+                if( !secure ){
                     throw new Error( 'Key parameter specified to be non-secure, yet SSM parameter returned a secure string' );
                 }
                 break;
             default:
-                throw new Error( 'SSM parameter format not recognized' );
+                throw new Error( 'SSM parameter format not supported' );
         }
 
         // Extract the relevant entry .
@@ -60,15 +60,6 @@ const createHandler = async( params ) => {
 
     // Pull class name from param
     const className = params.ClassName;
-
-    await client.query(
-        // Create the class
-        q.CreateClass({
-            name: className
-        })
-    );
-
-    // The above will error out if call can't be created, which means the class was created successfully
 
     // Fetch the indices
     const indices = params.Indices;
@@ -115,8 +106,8 @@ const createHandler = async( params ) => {
         let query = q.CreateIndex({
             name: index.Name,
 
-            // We're only supporting index on the newly created class here
-            source: q.Class( className ),
+            // the query variable will be defined later
+            source: q.Var( 'classRef' ),
             unique,
             terms,
             values
@@ -130,13 +121,28 @@ const createHandler = async( params ) => {
 
     }
 
-    await client.query(
-        // Wrapped in a Do expression such that all indices are created, or the whole thing fails
-        q.Do(
-            // Spread the index queries into the Do expression
-            ...indexQueryArray
-        )
-    );
+    try{
+        await client.query(
+            // Wrapped in a Let expression such that the class and all indices are created, or the whole thing fails
+            q.Let(
+                {
+                    // Create the Class, then fetch its Ref
+                    classRef: q.Select( 'ref', q.CreateClass({
+                        name: className
+                    }))
+                },
+
+                // Then Do
+                q.Do(
+                    // Spread the index queries into the Do expression
+                    ...indexQueryArray
+                )
+            )
+        );
+    } catch( e ){
+        throw new Error( JSON.stringify( e.errors() ) );
+    }
+
 
     // TODO Placeholder Return
     return {
@@ -159,7 +165,10 @@ const updateHandler = async( id, params, oldParams ) => {
     console.log( params );
 
     return {
-        PhysicalResourceId: 'FaunaDB Class and Index'
+        PhysicalResourceId: 'FaunaDB Class and Index',
+        FnGetAttrsDataObj: {
+            Response: 'Hola!'
+        }
     }
 
 };
@@ -168,17 +177,33 @@ const updateHandler = async( id, params, oldParams ) => {
 // The Delete Handler
 const deleteHandler = async( id, params ) => {
 
-    try{
+    // Create the Fauna Client
+    let client = await createClient( params );
 
-        console.log( params );
+    // Guard against creation failures
+    const res = await client.query(
+        q.Exists(
+            q.Class( params.ClassName )
+        )
+    );
 
-        // Create the Fauna Client
-        let client = createClient( params );
+    // The class doesn't exist, which means Create failed
+    if( !res ){
+        return {
+            PhysicalResourceId: 'FaunaDB Class and Index',
+            FnGetAttrsDataObj: {
+                Response: 'No class exists of that name, probably Create failed'
+            }
+        }
+    }
 
+    let indexQueryArray = [];
+
+    // If the resource had any indices
+    if( params.Indices ){
         const indices = params.Indices;
 
-        let indexQueryArray = [];
-        // let indicesCreated = [];
+        console.log( indices );
 
         for( let index of indices ){
             indexQueryArray.push(
@@ -186,33 +211,25 @@ const deleteHandler = async( id, params ) => {
                     q.Index( index.Name )
                 )
             );
-
-            // indicesDeleted.push( index.Name );
-        }
-
-        await client.query(
-            q.Do(
-                ...indexQueryArray
-            )
-        );
-
-        await client.query(
-            q.Delete(
-                q.Class( params.ClassName )
-            )
-        );
-
-        return {
-            PhysicalResourceId: 'FaunaDB Class and Index',
-            Response: ""
-        }
-    } catch( e ){
-        return {
-            PhysicalResourceId: 'FaunaDB Class and Index',
-            Response: 'Something went wrong'
         }
     }
 
+
+    await client.query(
+        q.Do(
+            ...indexQueryArray,
+            q.Delete(
+                q.Class( params.ClassName )
+            )
+        )
+    );
+
+    return {
+        PhysicalResourceId: 'FaunaDB Class and Index',
+        FnGetAttrsDataObj: {
+            Response: 'Class and indices deleted'
+        }
+    }
 
 };
 

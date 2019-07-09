@@ -14,9 +14,12 @@ module.exports = {
             required: [ 'Key' ]
         },
 
-        // Or both the Key parameter name and whether it is encrypted
+        // Or a Key Parameter from SSM
         {
-            required: [ 'KeyParameter', 'KeyParameterSecure' ]
+            required: [ 'KeyParameter' ]
+        },
+        {
+            required: [ 'KeyParameterSecure']
         }
     ],
 
@@ -33,12 +36,12 @@ module.exports = {
             type: 'string'
         },
 
-        // FaunaDB Key if it is stored in Parameter Store
+        // FaunaDB Key stored in Parameter Store
         KeyParameter:{
             type: 'string'
         },
 
-        // Whether the above store is encrypted
+        // FaunaDB Secure Key stored in Parameter Store
         KeyParameterSecure:{
             type: 'string'
         },
