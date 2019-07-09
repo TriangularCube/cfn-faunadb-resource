@@ -34,8 +34,7 @@ provider:
 functions:
     fauna:
         handler: fauna.handler
-        # TODO
-        # memorySize: 256
+        memorySize: 256
 
 resources:
     Description: The SLS template for deploying the FaunaDB custom resource backing Lambda

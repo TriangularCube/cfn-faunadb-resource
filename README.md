@@ -140,7 +140,7 @@ Indices:
     -   Name: index1
 ```
 
-####### Terms
+###### Terms
 Terms used to partition the index. If not specified, will contain all instances
 in the Class.  
 Takes an array terms. Each term is an array containing the path to the field to
@@ -148,9 +148,10 @@ be indexed.
 ```yaml
 # This creates a term on the `data.name` field
 Terms:
-    -
+    - field:
         - data
         - name
+      transform: 
 
 # This creates terms on both `data.name` and `data.id`
 Terms:
@@ -163,3 +164,19 @@ Terms:
 ```
 
 ###### Values
+Values describes the data covered by the index, which is what is returned from
+a query. If not specified, only the instance REF is covered.
+```yaml
+Values:
+    -
+        - data
+        - name
+    
+    -
+        - ref
+    
+    -
+        - ts
+```
+
+###### Unique
