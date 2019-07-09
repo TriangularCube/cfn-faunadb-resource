@@ -5,7 +5,6 @@
     "main": "index.js",
     "scripts": {
         "deploy": "cd src && sls deploy -v",
-        "cfn-deploy": "node ./node_modules/cfn-lambda/deploy.js",
         "test": "node ./test/test.js"
     },
     "repository": {

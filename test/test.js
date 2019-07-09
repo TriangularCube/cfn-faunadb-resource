@@ -8,6 +8,15 @@ async function run( data ){
     const client = new faunadb.Client({ secret: 'fnADSmcJL7ACCd7Uz3WAPh0suv5g6bhLzDSwnqvC' });
     const q = faunadb.query;
 
+    const res = await client.query(
+        q.Exists(
+            q.Class( data.ClassName )
+        )
+    );
+
+    console.log( res );
+    return;
+
 
     const indexes = data.Indexes;
 
