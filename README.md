@@ -87,7 +87,7 @@ Properties:
 
 ### Properties
 
-These are the properties used by the resource
+These are the properties used by the lambda
 
 ###### ClassName
 Required  
@@ -102,7 +102,7 @@ ClassName: your-class-name
 ###### KeyParameterSecure
 
 Required  
-This resource expects a FaunaDB Key to be able to connect to FaunaDB. There are 
+This lambda expects a FaunaDB Key to be able to connect to FaunaDB. There are 
 three ways to specify this key: in plain text, as an SSM parameter, or a secure
 SSM parameter.
 
@@ -138,29 +138,50 @@ Every index needs a name too.
 ```yaml
 Indices:
     -   Name: index1
+    ...
 ```
+
+###### ID
+Required
+As FaunaDB allows indices to change its name, this property is simply for this
+lambda to keep track of specific indices across updates properly.
+```yaml
+Indices:
+    -   Name: users_by_name
+        ID: users-name
+```
+Indices with the same ID will be treated as the same index, and will be updated
+accordingly.
+
+_Note: FaunaDB dictates that indices cannot change its Terms, Values, or
+Partition fields. Any updates to these fields will trigger a replacement of
+the index._
 
 ###### Terms
 Terms used to partition the index. If not specified, will contain all instances
 in the Class.  
-Takes an array terms. Each term is an array containing the path to the field to
-be indexed.
+Takes an array terms. Each term contains an object with a field property containing the
+path to the field to be indexed, and an optional transform property. Please refer to
+[FaunaDB documentation](
+https://docs.fauna.com/fauna/current/reference/indexconfig#term-objects)
+for more information.
 ```yaml
 # This creates a term on the `data.name` field
 Terms:
     - field:
         - data
         - name
-      transform: 
 
 # This creates terms on both `data.name` and `data.id`
 Terms:
-    -
+    - field:
         - data
         - name
-    -
+    
+    - field:
         - data
         - id
+      transform: casefold
 ```
 
 ###### Values
@@ -168,15 +189,16 @@ Values describes the data covered by the index, which is what is returned from
 a query. If not specified, only the instance REF is covered.
 ```yaml
 Values:
-    -
+    - field:
         - data
         - name
     
-    -
+    - field:
         - ref
     
-    -
+    - field:
         - ts
+      reverse: true
 ```
 
 ###### Unique

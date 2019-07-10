@@ -60,10 +60,14 @@ module.exports = {
 
                 // Must have a name
                 required: [
-                    'Name'
+                    'Name', 'ID'
                 ],
                 properties: {
                     Name: {
+                        type: 'string'
+                    },
+
+                    ID: {
                         type: 'string'
                     },
 
