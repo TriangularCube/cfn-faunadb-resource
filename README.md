@@ -153,10 +153,6 @@ Indices:
 Indices with the same ID will be treated as the same index, and will be updated
 accordingly.
 
-_Note: FaunaDB dictates that indices cannot change its Terms, Values, or
-Partition fields. Any updates to these fields will trigger a replacement of
-the index._
-
 ###### Terms
 Terms used to partition the index. If not specified, will contain all instances
 in the Class.  
@@ -184,6 +180,10 @@ Terms:
       transform: casefold
 ```
 
+_Note: FaunaDB dictates that indices cannot change its Terms, Values, or
+Partition fields. Any updates to these fields will trigger a replacement of
+the index._
+
 ###### Values
 Values describes the data covered by the index, which is what is returned from
 a query. If not specified, only the instance REF is covered.
@@ -201,4 +201,37 @@ Values:
       reverse: true
 ```
 
+_Note: FaunaDB dictates that indices cannot change its Terms, Values, or
+Partition fields. Any updates to these fields will trigger a replacement of
+the index._
+
 ###### Unique
+
+This field will dictate all instances covered by this index be unique (i.e. will not
+allow duplicated entries to be added to the DB). If this property is updated from
+false to true, existing duplicate instances will not be removed, but future duplicate
+entries will be forbidden.
+
+`true` or `True` will evaluate to True, all other entries will be treated as False
+```yaml
+Unique: true
+# Or
+Unique: false
+```
+
+# Caveat
+
+This project is a long ways away from implementing all features supported by
+FaunaDB. My hope is eventually to implement most functionality, but at the moment
+I have no idea if this is feasible. Comments are always welcome if you have any
+ideas about the direction this project should take.
+
+# Contributing
+
+Pull Requests are always welcome, though I won't guarantee I can get around to
+reviewing it immediately. Priority at the moment is obviously to incorporate as many of missing FaunaDB
+features as possible. 
+
+# License
+
+[MIT](https://github.com/TriangularCube/cfn-faunadb-resource/blob/master/LICENSE.md)
