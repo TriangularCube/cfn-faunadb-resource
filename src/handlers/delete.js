@@ -1,6 +1,8 @@
-const { client, q } = require( '../util/client' );
+const connect = require( '../util/connect' );
 
 module.exports = async( id, params ) => {
+
+    const { client, q } = await connect( params );
 
     // Guard against creation failures
     const res = await client.query(
@@ -23,11 +25,7 @@ module.exports = async( id, params ) => {
 
     // If the resource had any indices
     if( params.Indices ){
-        const indices = params.Indices;
-
-        console.log( indices );
-
-        for( let index of indices ){
+        for( let index of params.Indices ){
             indexQueryArray.push(
                 q.Delete(
                     q.Index( index.Name )
@@ -35,7 +33,6 @@ module.exports = async( id, params ) => {
             );
         }
     }
-
 
     await client.query(
         q.Do(

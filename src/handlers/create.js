@@ -1,6 +1,8 @@
-const { client, q } = require( '../util/client' );
+const connect = require( '../util/connect' );
 
 module.exports = async( params ) => {
+
+    const { client, q } = await connect( params );
 
     // Pull class name from param
     const className = params.ClassName;
@@ -32,7 +34,7 @@ module.exports = async( params ) => {
             for( let term of index.Terms ){
 
                 // Push a formatted object into the array
-                terms.push( { field: term } );
+                terms.push( term );
 
             }
         }
@@ -42,7 +44,7 @@ module.exports = async( params ) => {
 
         if( index.Values ){
             for( let value of index.Values ){
-                values.push( { field: value } );
+                values.push( value );
             }
         }
 

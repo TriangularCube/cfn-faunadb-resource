@@ -80,9 +80,20 @@ module.exports = {
                     Terms: {
                         type: 'array',
                         items: {
-                            type: 'array',
-                            items:{
-                                type: 'string'
+                            type: 'object',
+                            required: [
+                                'field'
+                            ],
+                            properties: {
+                                field: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'string'
+                                    }
+                                },
+                                transform: {
+                                    type: 'string'
+                                }
                             }
                         }
                     },
@@ -93,9 +104,20 @@ module.exports = {
 
                         // Items are all arrays of strings
                         items:{
-                            type: 'array',
-                            items:{
-                                type: 'string'
+                            type: 'object',
+                            required: [
+                                'field'
+                            ],
+                            properties: {
+                                field: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'string'
+                                    }
+                                },
+                                reverse: {
+                                    type: 'string'
+                                }
                             }
                         }
                     }

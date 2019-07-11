@@ -1,5 +1,4 @@
 const faunadb = require( 'faunadb' );
-const q = faunadb.query;
 
 // Get the FaunaDB Key from parameters
 module.exports = async ( params ) => {
@@ -18,10 +17,17 @@ module.exports = async ( params ) => {
         const instance = new SSM();
 
         // Default to true unless 'false' or 'False"
-        const secure = !!params.KeyParameter;
+        const secure = !params.KeyParameter;
+
+        let keyParam;
+        if( secure ){
+            keyParam = params.KeyParameterSecure;
+        } else {
+            keyParam = params.KeyParameter
+        }
 
         // Get the key from parameter store (inverted notSecure)
-        key = await instance.getParameter({ Name: params.KeyParameter, WithDecryption: secure }).promise();
+        key = await instance.getParameter({ Name: keyParam, WithDecryption: secure }).promise();
 
         // Guard against wrong config
         switch ( key.Parameter.Type ) {
@@ -44,9 +50,12 @@ module.exports = async ( params ) => {
 
     }
 
+    const client = new faunadb.Client( { secret: key } );
+    const q = faunadb.query;
+
     // First create the Fauna client
     return {
-        client: new faunadb.Client({ secret: key }),
+        client,
         q
     };
 
