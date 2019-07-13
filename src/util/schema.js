@@ -50,74 +50,65 @@ module.exports = {
         Indices: {
 
             // Type is an Array
-            type: 'array',
+            type: 'object',
 
-            // All items must be:
-            items: {
+            required: [
+                'Name'
+            ],
 
-                // An object
-                type: 'object',
+            properties: {
 
-                // Must have a name
-                required: [
-                    'Name', 'ID'
-                ],
-                properties: {
-                    Name: {
-                        type: 'string'
-                    },
+                // Every index needs a name
+                Name: {
+                    type: 'string'
+                },
 
-                    ID: {
-                        type: 'string'
-                    },
+                // Whether this index should have the unique constraint
+                Unique: {
+                    type: 'string'
+                },
 
-                    // Whether this index should have the unique constraint
-                    Unique: {
-                        type: 'string'
-                    },
-
-                    // Terms for this index
-                    Terms: {
-                        type: 'array',
-                        items: {
-                            type: 'object',
-                            required: [
-                                'field'
-                            ],
-                            properties: {
-                                field: {
-                                    type: 'array',
-                                    items: {
-                                        type: 'string'
-                                    }
-                                },
-                                transform: {
+                // Terms for this index
+                Terms: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        required: [
+                            'field'
+                        ],
+                        properties: {
+                            field: {
+                                type: 'array',
+                                items: {
                                     type: 'string'
                                 }
+                            },
+                            transform: {
+                                type: 'string'
                             }
                         }
-                    },
+                    }
+                },
 
-                    // Values for this index
-                    Values: {
-                        type: 'array',
+                // Values for this index
+                Values: {
+                    type: 'array',
 
-                        // Items are all arrays of strings
-                        items:{
-                            type: 'object',
-                            required: [
-                                'field'
-                            ],
-                            properties: {
-                                field: {
-                                    type: 'array',
-                                    items: {
-                                        type: 'string'
-                                    }
-                                },
-                                reverse: {
+                    // Items are all arrays of strings
+                    items:{
+                        type: 'object',
+                        required: [
+                            'field'
+                        ],
+                        properties: {
+                            field: {
+                                type: 'array',
+                                items: {
                                     type: 'string'
                                 }
+                            },
+                            reverse: {
+                                type: 'string'
                             }
                         }
                     }

@@ -1,10 +1,6 @@
 const connect = require( '../util/connect' );
-const unique = require( '../util/unique' );
 
 module.exports = async( id, newParams, oldParams ) => {
-
-    // Check for uniqueness of IDs
-    unique( newParams.Indices );
 
 
     const { client, q } = await connect( newParams );

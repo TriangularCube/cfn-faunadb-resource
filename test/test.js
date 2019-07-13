@@ -73,50 +73,67 @@ async function run( data, data2 ){
 
 
 const data = {
+    Key: 'fnADSmcJL7ACCd7Uz3WAPh0suv5g6bhLzDSwnqvC',
     ClassName: 'users',
-    Indexes: {
+    Indices: {
         1: {
             Name: 'users_by_displayName',
-                Terms: [
-                    ['data', 'displayName']
-                ]
+            Terms: [
+                {
+                    field: ['data', 'displayName']
+                }
+            ]
         },
         2: {
             Name: 'users_by_sub',
-                Values: [
-                    ['data', 'sub']
-                ]
+            Values: [
+                {
+                    field: ['data', 'sub']
+                }
+            ]
         }
     }
 };
 
 const data2 = {
     ClassName: 'users',
-    Indexes: {
+    Indices: {
         1: {
             Name: 'users_by_displayName',
             Terms: [
-                ['data', 'displayName']
+                {
+                    field: ['data', 'displayName']
+                }
             ]
         },
         3: {
             Name: 'users_by_id',
             Terms: [
-                [ 'data', 'sub' ]
+                {
+                    field: [ 'data', 'sub' ]
+                }
             ]
         },
         2: {
             Name: 'users_by_sub_and_id',
             Values: [
-                ['data', 'sub'],
-                ['data', 'id' ]
+                {
+                    field: ['data', 'sub']
+                },
+                {
+                    field: ['data', 'id' ]
+                }
             ]
         }
     }
 };
 
-run( data, data2 ).then((res) => {
-    console.log( `Response is ${ JSON.stringify( res ) }` );
+// let test = require( '../src/handlers/create' );
+let test = require( '../src/handlers/delete' );
+
+
+test( 'a', data ).then((res) => {
+    console.log( `Response is ${ res.FnGetAttrsDataObj.Response }` );
 }).catch(( err ) => {
-    console.error( `Error: ${ JSON.stringify( err ) }` );
+    console.error( `Error: ${ err }` );
 });

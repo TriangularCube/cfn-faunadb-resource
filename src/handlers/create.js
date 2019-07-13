@@ -7,8 +7,8 @@ module.exports = async( params ) => {
     // Pull class name from param
     const className = params.ClassName;
 
-    // Fetch the indices
-    const indices = params.Indices;
+    // Fetch the indices (In create we can ignore the keys)
+    const indices = Object.values( params.Indices );
 
     // Start with an empty array of Index creation queries
     let indexQueryArray = [];
@@ -20,7 +20,7 @@ module.exports = async( params ) => {
         let unique = false;
 
         // If unique property exists, and is true
-        if( params.Unique && ( params.Unique === 'true' || params.Unique === 'True' ) ){
+        if( index.Unique && ( index.Unique === 'true' || index.Unique === 'True' ) ){
             unique = true;
         }
 
@@ -56,7 +56,8 @@ module.exports = async( params ) => {
             source: q.Var( 'classRef' ),
             unique,
             terms,
-            values
+            values,
+            active: true
         });
 
         // Add the built query into the array

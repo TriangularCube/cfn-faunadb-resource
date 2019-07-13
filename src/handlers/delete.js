@@ -25,7 +25,11 @@ module.exports = async( id, params ) => {
 
     // If the resource had any indices
     if( params.Indices ){
-        for( let index of params.Indices ){
+
+        // Fetch the indices as an array
+        const indices = Object.values( params.Indices );
+
+        for( let index of indices ){
             indexQueryArray.push(
                 q.Delete(
                     q.Index( index.Name )

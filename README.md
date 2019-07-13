@@ -122,36 +122,38 @@ KeyParameterSecure: SecureKey
 
 #### Indices
 While not required, indices do make classes more useful.
-Takes an array of index descriptions to create the index on the Class.
+Takes an object with index descriptions to create the index on the Class.
 ```yaml
 Indices:
-    -   # Index description 1
-    -   # Index description 2
+    index1:
+        ... # Index description 1
+    index2:
+        ...# Index description 2
     ...
 ```
 
 Each index description needs the follows:
 
-###### Name
-Required  
-Every index needs a name too.
+###### Property Name
+The property name of each index is not actually used by FaunaDB, but is needed by
+this package to keep track of which index has updated, and which are newly
+added/deleted
 ```yaml
 Indices:
+    IndexProperty1:
+        ...
+    IndexProperty2:
+        ...
+```
+
+###### Name
+Required  
+FaunaDB does require each index to have an actual name.
+```yaml
+Index1:
     -   Name: index1
     ...
 ```
-
-###### ID
-Required
-As FaunaDB allows indices to change its name, this property is simply for this
-lambda to keep track of specific indices across updates properly.
-```yaml
-Indices:
-    -   Name: users_by_name
-        ID: users-name
-```
-Indices with the same ID will be treated as the same index, and will be updated
-accordingly.
 
 ###### Terms
 Terms used to partition the index. If not specified, will contain all instances
@@ -219,6 +221,9 @@ Unique: true
 Unique: false
 ```
 
+# TODOs
+Implement Update Handler
+
 # Caveat
 
 This project is a long ways away from implementing all features supported by
@@ -229,8 +234,8 @@ ideas about the direction this project should take.
 # Contributing
 
 Pull Requests are always welcome, though I won't guarantee I can get around to
-reviewing it immediately. Priority at the moment is obviously to incorporate as many of missing FaunaDB
-features as possible. 
+reviewing it immediately. Priority at the moment is obviously to incorporate as
+many of missing FaunaDB features as possible. 
 
 # License
 
