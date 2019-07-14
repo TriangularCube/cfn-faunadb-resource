@@ -26,7 +26,7 @@
     },
     "dependencies": {
         "cfn-lambda": "^4.0.0",
-        "deep-diff": "^1.0.2",
-        "faunadb": "^2.6.1"
+        "faunadb": "^2.6.1",
+        "lodash.difference": "^4.5.0"
     }
 }

@@ -21,25 +21,48 @@ module.exports = async( id, newParams, oldParams ) => {
 
     // Next find differences in Indices
 
-    let indicesUpdateQueries = [];
+    let firstPassIndicesQueries = [];
+    let secondPassIndicesQueries = [];
 
-    let newIndices = newParams.Indices;
-    let oldIndices = oldParams.Indices;
+    let newIndices = [];
+    let oldIndices = [];
+
+    // Fetch indices if any exist
+    if( newParams.Indices ){
+        newIndices = Object.entries( newParams.Indices );
+    }
+
+    if( oldParams.Indices ){
+        oldIndices = Object.entries( oldParams.Indices );
+    }
+
+    // Convenience arrays for response
+    let indicesStayedSame = [];
+    let indicesUpdated = [];
+    let indicesNew = [];
+    let indicesDeleted = [];
 
     // First iterate through old indices and see if they've changed or were removed
-    for( let index of oldIndices ){
+    for( let oldIndex of oldIndices ){
 
         // Check each index against the new list
-        let exists = newIndices.some( (element) => element.ID === index.ID );
+        let newIndex = newIndices.find( (element) => element[0] === oldIndex[0] );
 
-        if( exists ){
+        if( newIndex ){
 
             // It exists! Now check for equivalence
 
+            
 
         } else {
 
             // It doesn't exist! Prep for deletion
+            let deleteQuery = q.Delete(
+                q.Index( oldIndex[0] )
+            );
+
+            firstPassIndicesQueries.push( deleteQuery );
+            indicesDeleted.push( oldIndex[0] );
 
         }
 
