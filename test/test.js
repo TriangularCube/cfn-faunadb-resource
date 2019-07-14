@@ -9,7 +9,44 @@ const data = {
             Name: 'users_by_displayName',
             Terms: [
                 {
+                    field: [ 'data', 'displayName' ]
+                },
+                {
+                    field: [ 'data', 'id' ]
+                },
+                {
+                    field: [ 'data', 'test' ],
+                    transform: 'casefold'
+                }
+            ]
+        },
+        2: {
+            Name: 'users_by_sub',
+            Values: [
+                {
+                    field: ['data', 'sub']
+                }
+            ]
+        }
+    }
+};
+
+const data3 = {
+    Key: 'fnADSmcJL7ACCd7Uz3WAPh0suv5g6bhLzDSwnqvC',
+    ClassName: 'users',
+    Indices: {
+        1: {
+            Name: 'users_by_displayName',
+            Terms: [
+                {
                     field: ['data', 'displayName']
+                },
+                {
+                    field: [ 'data', 'test' ],
+                    transform: 'casefold'
+                },
+                {
+                    field: [ 'data', 'something' ]
                 }
             ]
         },
@@ -60,19 +97,11 @@ const data2 = {
 // let test = require( '../src/handlers/create' );
 // let test = require( '../src/handlers/delete' );
 
-const diff = require( 'lodash.difference' );
+let test = require( '../src/handlers/update' );
 
-console.log( diff(
-    [
-        [ 'data', 'id' ]
-    ],
-    [
-        [ 'data', 'id' ]
-    ]
-) );
 
-// test( 'a', data ).then((res) => {
-//     console.log( `Response is ${ res.FnGetAttrsDataObj.Response }` );
-// }).catch(( err ) => {
-//     console.error( `Error: ${ err }` );
-// });
+test( 'a', data, data ).then((res) => {
+    console.log( `Response is ${ res.FnGetAttrsDataObj.Response }` );
+}).catch(( err ) => {
+    console.error( `Error: ${ err }` );
+});
