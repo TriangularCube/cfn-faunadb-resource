@@ -59,30 +59,34 @@ Properties:
     
     # Indices to be created on this Class
     Indices:
-        - Name: users_by_name
-          ID: 1
-          Terms:
-            -
-                - data
-                - name
+        nameTerm:
+            Name: users_by_name
+            Terms:
+                - field:
+                    - data
+                    - name
+        nameAgeTerm:
+            Name: users_by_name_and_age
+            Terms:
+                - field:
+                    - data
+                    - name
+                  transform: 'casefold'
+                  
+                - field:
+                    - data
+                    - age
         
-        - Name: users_by_name_and_age
-          ID: 2
-          Terms:
-            -
-                - data
-                - name
-            -
-                - data
-                - age
+        username:
+            Name: usernames
+            Values:
+                - field:
+                    - data
+                    - username
+                  reverse: true
         
-        - Name: usernames
-          Values:
-            -
-                - data
-                - username
-        
-        - Name: all_users
+        all:
+            Name: all_users
 ```
 
 ### Properties
