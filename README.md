@@ -227,6 +227,9 @@ Unique: true
 Unique: false
 ```
 
+# TODO
+Better documentation
+
 # Caveat
 
 This project is a long ways away from implementing all features supported by
