@@ -65,6 +65,8 @@ Properties:
                 - field:
                     - data
                     - name
+            Unique: `true`
+            
         nameAgeTerm:
             Name: users_by_name_and_age
             Terms:
@@ -83,7 +85,7 @@ Properties:
                 - field:
                     - data
                     - username
-                  reverse: true
+                  reverse: `true`
         
         all:
             Name: all_users
@@ -224,9 +226,6 @@ Unique: true
 # Or
 Unique: false
 ```
-
-# TODOs
-Implement Update Handler
 
 # Caveat
 
