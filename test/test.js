@@ -2,37 +2,7 @@ const faunadb = require( 'faunadb' );
 
 
 const data = {
-    Key: 'fnADSmcJL7ACCd7Uz3WAPh0suv5g6bhLzDSwnqvC',
-    ClassName: 'users',
-    Indices: {
-        1: {
-            Name: 'users_by_displayName',
-            Terms: [
-                {
-                    field: [ 'data', 'displayName' ]
-                },
-                {
-                    field: [ 'data', 'id' ]
-                },
-                {
-                    field: [ 'data', 'test' ],
-                    transform: 'casefold'
-                }
-            ]
-        },
-        2: {
-            Name: 'users_by_sub',
-            Values: [
-                {
-                    field: ['data', 'sub']
-                }
-            ]
-        }
-    }
-};
-
-const data3 = {
-    Key: 'fnADSmcJL7ACCd7Uz3WAPh0suv5g6bhLzDSwnqvC',
+    Key: 'fnADTYvYuRACAwAp_EcbYfN7bLQ9e-vlxgZApqpR',
     ClassName: 'users',
     Indices: {
         1: {
@@ -40,54 +10,61 @@ const data3 = {
             Terms: [
                 {
                     field: ['data', 'displayName']
-                },
-                {
-                    field: [ 'data', 'test' ],
-                    transform: 'casefold'
-                },
-                {
-                    field: [ 'data', 'something' ]
                 }
             ]
         },
         2: {
+            Name: 'users_by_id_and_display',
+            Terms: [
+                {
+                    field: [ 'data', 'id' ],
+                    transform: 'casefold'
+                }
+            ]
+        },
+        3: {
             Name: 'users_by_sub',
             Values: [
                 {
                     field: ['data', 'sub']
                 }
             ]
+        },
+        4: {
+            Name: 'index_to_be_deleted'
         }
     }
 };
 
 const data2 = {
-    ClassName: 'users',
+    Key: 'fnADTYvYuRACAwAp_EcbYfN7bLQ9e-vlxgZApqpR',
+    ClassName: 'users_new',
     Indices: {
         1: {
-            Name: 'users_by_displayName',
+            Name: 'users_by_displayName_and_id',
             Terms: [
                 {
                     field: ['data', 'displayName']
-                }
-            ]
-        },
-        3: {
-            Name: 'users_by_id',
-            Terms: [
+                },
                 {
-                    field: [ 'data', 'sub' ]
+                    field: ['data', 'id' ]
                 }
             ]
         },
         2: {
-            Name: 'users_by_sub_and_id',
+            Name: 'users_by_id_and_display',
+            Terms: [
+                {
+                    field: [ 'data', 'id' ],
+                    transform: 'casefold'
+                }
+            ]
+        },
+        3: {
+            Name: 'users_by_sub_new',
             Values: [
                 {
                     field: ['data', 'sub']
-                },
-                {
-                    field: ['data', 'id' ]
                 }
             ]
         }
@@ -95,13 +72,23 @@ const data2 = {
 };
 
 // let test = require( '../src/handlers/create' );
+//
+// test( data ).then((res) => {
+//     console.log( `Response is ${ res.FnGetAttrsDataObj.Response }` );
+// }).catch(( err ) => {
+//     console.error( `Error: ${ JSON.stringify( err.errors() ) }` );
+// });
+
+
+
 // let test = require( '../src/handlers/delete' );
 
 let test = require( '../src/handlers/update' );
 
 
-test( 'a', data, data ).then((res) => {
+test( 'a', data2, data ).then((res) => {
     console.log( `Response is ${ res.FnGetAttrsDataObj.Response }` );
 }).catch(( err ) => {
-    console.error( `Error: ${ err }` );
+    console.error( `Error: ${ JSON.stringify( err.errors() ) }` );
 });
+

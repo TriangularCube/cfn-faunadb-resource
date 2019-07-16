@@ -35,6 +35,7 @@ functions:
     fauna:
         handler: fauna.handler
         memorySize: 256
+        timeout: 70
 
 resources:
     Description: The SLS template for deploying the FaunaDB custom resource backing Lambda

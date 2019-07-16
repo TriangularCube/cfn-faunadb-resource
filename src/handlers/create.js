@@ -1,4 +1,5 @@
 const connect = require( '../util/connect' );
+const createIndex = require( '../util/createIndex' );
 
 module.exports = async( params ) => {
 
@@ -17,48 +18,7 @@ module.exports = async( params ) => {
     // Iterate through indices from params
     for( let index of indices ){
 
-        let unique = false;
-
-        // If unique property exists, and is true
-        if( index.Unique && ( index.Unique === 'true' || index.Unique === 'True' ) ){
-            unique = true;
-        }
-
-        // Get all terms specified
-        let terms = [];
-
-        // If the input has Term entries
-        if( index.Terms ){
-
-            // Iterate over all entries
-            for( let term of index.Terms ){
-
-                // Push a formatted object into the array
-                terms.push( term );
-
-            }
-        }
-
-        // Do the same thing for Values
-        let values = [];
-
-        if( index.Values ){
-            for( let value of index.Values ){
-                values.push( value );
-            }
-        }
-
-        // Build the query
-        let query = q.CreateIndex({
-            name: index.Name,
-
-            // the query variable will be defined later
-            source: q.Var( 'classRef' ),
-            unique,
-            terms,
-            values,
-            active: true
-        });
+        let query = createIndex( index, q.Var( 'classRef' ), true );
 
         // Add the built query into the array
         indexQueryArray.push( query );

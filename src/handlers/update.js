@@ -1,9 +1,11 @@
 const connect = require( '../util/connect' );
 const equal = require( 'fast-deep-equal' );
 
+const createIndex = require( '../util/createIndex' );
+
 module.exports = async( id, newParams, oldParams ) => {
 
-
+    // Get client and q
     const { client, q } = await connect( newParams );
 
     // Check Class field update
@@ -40,6 +42,7 @@ module.exports = async( id, newParams, oldParams ) => {
     // Convenience arrays for response
     let indicesStayedSame = [];
     let indicesUpdated = [];
+    let indicesRebuilt = [];
     let indicesNew = [];
     let indicesDeleted = [];
 
@@ -59,23 +62,125 @@ module.exports = async( id, newParams, oldParams ) => {
 
             // Check if replacement needs to be triggered
             if( shouldReplace( newIndex[1], oldIndex[1] ) ){
-                // TODO
-                console.log( 'true' );
+
+                // Query for removing the old index
+                let remove = q.Delete(
+                    q.Index(
+                        oldIndex[1].Name
+                    )
+                );
+
+                // Push to the array
+                firstPassIndicesQueries.push( remove );
+
+                // Query for building the new index
+                let create = createIndex( newIndex[1], q.Class( newParams.ClassName ), false );
+
+                // Push to array
+                secondPassIndicesQueries.push( create );
+
+                // Convenience for output
+                indicesRebuilt.push( newIndex[1].Name );
+
             } else {
-                console.log( 'false' );
+
+                let updateObject = {};
+
+                // Check if anything needs to be updated
+
+                // First up, uniqueness (is true if Unique exists, and is either `true` or `True`. Otherwise false
+                let newUnique = newIndex[1].Unique ? ( newIndex[1].Unique === 'true' || newIndex[1].Unique === 'True' ) : false;
+                let oldUnique = oldIndex[1].Unique ? ( oldIndex[1].Unique === 'true' || oldIndex[1].Unique === 'True' ) : false;
+
+                if( oldUnique !== newUnique ){
+
+                    // If uniqueness changed
+                    updateObject['unique'] = newUnique;
+
+                }
+
+                // Next up, Name
+                if( oldIndex[1].Name !== newIndex[1].Name ){
+
+                    updateObject['name'] = newIndex[1].Name;
+
+                }
+
+                // TODO support properties: serialized, partition, permission, data
+
+                if( Object.getOwnPropertyNames( updateObject ).length > 0 ){
+
+                    // If there's more then zero properties in UpdateObject, means we need o update
+                    let query = q.Update(
+                        q.Index( oldIndex[1].Name ),
+                        updateObject
+                    );
+
+                    firstPassIndicesQueries.push( query );
+                    indicesUpdated.push( newIndex[0] );
+
+                } else {
+
+                    // Index stayed the same
+                    indicesStayedSame.push( oldIndex[1].Name );
+
+                }
+
             }
 
         } else {
 
             // It doesn't exist! Prep for deletion
             let deleteQuery = q.Delete(
-                q.Index( oldIndex[0] )
+                q.Index( oldIndex[1].Name )
             );
 
             firstPassIndicesQueries.push( deleteQuery );
-            indicesDeleted.push( oldIndex[0] );
+            indicesDeleted.push( oldIndex[1].Name );
 
         }
+
+    }
+
+    for( let newIndex of newIndices ){
+
+        // See if the new index exists in the old indices
+        let oldIndex = oldIndices.find( ( element ) => element[0] === newIndex[0] );
+
+        // If not
+        if( !oldIndex ){
+
+            // This must be a new index
+            firstPassIndicesQueries.push( createIndex( newIndex[1], q.Class( oldParams.ClassName ), false ) );
+
+            indicesNew.push( newIndex[1].Name );
+
+        }
+
+    }
+
+    console.log( JSON.stringify( secondPassIndicesQueries ) );
+
+    // We push class rename into the first pass queries at the end
+
+    // And execute
+    await client.query(
+        q.Do(
+            ...firstPassIndicesQueries,
+            classRename
+        )
+    );
+
+    // If a second passe exist, wait for 60s, then execute
+    if( secondPassIndicesQueries.length > 0 ){
+
+        await sleep( 60 * 1000 );
+
+        await client.query(
+            q.Do(
+                ...secondPassIndicesQueries
+            )
+        )
 
     }
 
@@ -162,4 +267,8 @@ function shouldReplace( newIndex, oldIndex ){
     // Else, everything has passed the equality check
     return false;
 
+}
+
+function sleep( ms ){
+    return new Promise( resolve => setTimeout( resolve, ms ) );
 }
