@@ -134,11 +134,11 @@ Indices:
     index1:
         ... # Index description 1
     index2:
-        ...# Index description 2
+        ... # Index description 2
     ...
 ```
 
-Each index description needs the follows:
+Each index description needs the following:
 
 ###### Property Name
 The property name of each index is not actually used by FaunaDB, but is needed by
