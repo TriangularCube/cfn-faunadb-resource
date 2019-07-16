@@ -184,12 +184,32 @@ module.exports = async( id, newParams, oldParams ) => {
 
     }
 
-    // TODO iterate over new indices to find new entries
+    // Build a response object
+    let response = {};
+    if( classRename ){
+        response['Renamed Class'] = `From ${oldParams.ClassName} to ${newParams.ClassName}`;
+    }
+    if( indicesStayedSame.length > 0 ){
+        response['Indices Stayed the Same'] = indicesStayedSame;
+    }
+    if( indicesUpdated.length > 0){
+        response['Indices Updated'] = indicesUpdated;
+    }
+    if( indicesRebuilt.length > 0){
+        response['Indices Rebuilt'] = indicesRebuilt;
+    }
+    if( indicesNew.length > 0){
+        response['New indices added'] = indicesNew;
+    }
+    if( indicesDeleted.length > 0){
+        response['Indices Deleted'] = indicesDeleted;
+    }
+
 
     return {
         PhysicalResourceId: 'FaunaDB Class and Index',
         FnGetAttrsDataObj: {
-            Response: 'Hola!'
+            Response: JSON.stringify(response)
         }
     }
 
