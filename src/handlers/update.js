@@ -159,8 +159,6 @@ module.exports = async( id, newParams, oldParams ) => {
 
     }
 
-    console.log( JSON.stringify( secondPassIndicesQueries ) );
-
     // We push class rename into the first pass queries at the end
 
     // And execute
