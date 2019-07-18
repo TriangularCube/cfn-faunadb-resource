@@ -142,8 +142,7 @@ Each index description needs the following:
 
 ###### Property Name
 The property name of each index is not actually used by FaunaDB, but is needed by
-this package to keep track of which index has updated, and which are newly
-added/deleted
+this package to keep track of which index has updated, and which are added/deleted
 ```yaml
 Indices:
     IndexProperty1:
@@ -157,7 +156,7 @@ Required
 FaunaDB does require each index to have an actual name.
 ```yaml
 Index1:
-    -   Name: index1
+    Name: index1
     ...
 ```
 
@@ -168,7 +167,10 @@ Takes an array terms. Each term contains an object with a field property contain
 path to the field to be indexed, and an optional transform property. Please refer to
 [FaunaDB documentation](
 https://docs.fauna.com/fauna/current/reference/indexconfig#term-objects)
-for more information.
+for more information.  
+
+Internally this object is passed onto to FaunaDB's JS driver, so it should be formatted
+according to requirements (i.e. properties are lower case, etc.)
 ```yaml
 # This creates a term on the `data.name` field
 Terms:
@@ -194,7 +196,10 @@ the index._
 
 ###### Values
 Values describes the data covered by the index, which is what is returned from
-a query. If not specified, only the instance REF is covered.
+a query. If not specified, only the instance REF is covered.  
+
+Internally this object is passed onto to FaunaDB's JS driver, so it should be formatted
+according to requirements (i.e. properties are lower case, etc.)
 ```yaml
 Values:
     - field:
