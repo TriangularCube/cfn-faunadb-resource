@@ -1,8 +1,8 @@
 # FaunaDB CloudFormation custom resource
 
-This project is a Lambda function for creating a Class and Indices (in the class)
-in FaunaDB as a CloudFormation Custom Resource, as well as a Serverless Template
-for deploying it to AWS.
+This project is a Lambda function for creating a Collections and Indices (in the
+collection) in FaunaDB as a CloudFormation Custom Resource, as well as a Serverless
+Template for deploying it to AWS.
 
 
 # Getting Started
@@ -45,19 +45,19 @@ Resources:
                 Fn::ImportValue: my-exported-resource-name
 ```
 
-This resource will create one class, and any number of indices on the class.
+This resource will create one collection, and any number of indices on the collection.
 Here's an example of how to format the template
 ```yaml
 Properties:
     ServiceToken: ...
     
-    # FaunaDB Class name
-    ClassName: some-name
+    # FaunaDB Collection name
+    CollectionName: some-name
     
-    # FaunaDB Key paramter
+    # FaunaDB Key parameter
     KeyParameter: KeyParam
     
-    # Indices to be created on this Class
+    # Indices to be created on this Collection
     Indices:
         nameTerm:
             Name: users_by_name
@@ -95,12 +95,12 @@ Properties:
 
 These are the properties used by the lambda
 
-###### ClassName
+###### CollectionName
 Required  
-Every class needs a name. Takes a compatible string for the Class Name.
+Every collection needs a name.
 
 ```yaml
-ClassName: your-class-name
+CollectionName: your-collection-name
 ```
 
 ###### Key
@@ -127,8 +127,8 @@ KeyParameterSecure: SecureKey
 ```
 
 #### Indices
-While not required, indices do make classes more useful.
-Takes an object with index descriptions to create the index on the Class.
+While not required, indices do make collections more useful.
+Takes an object with index descriptions to create the index on the Collection.
 ```yaml
 Indices:
     index1:
@@ -163,7 +163,7 @@ Index1:
 
 ###### Terms
 Terms used to partition the index. If not specified, will contain all instances
-in the Class.  
+in the Collection.  
 Takes an array terms. Each term contains an object with a field property containing the
 path to the field to be indexed, and an optional transform property. Please refer to
 [FaunaDB documentation](

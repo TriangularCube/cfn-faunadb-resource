@@ -8,16 +8,16 @@ module.exports = async( id, newParams, oldParams ) => {
     // Get client and q
     const { client, q } = await connect( newParams );
 
-    // Check Class field update
+    // Check collection field update
 
-    let classRename = null;
+    let collectionRename = null;
 
-    // Evidently the only thing to look for in Class is the name field
-    if( newParams.ClassName !== oldParams.ClassName ){
-        classRename = q.Update(
-            q.Class( oldParams.ClassName ),
+    // Evidently the only thing to look for in collection is the name field
+    if( newParams.CollectionName !== oldParams.CollectionName ){
+        collectionRename = q.Update(
+            q.Collection( oldParams.CollectionName ),
             {
-                name: newParams.ClassName
+                name: newParams.CollectionName
             }
         )
     }
@@ -74,7 +74,7 @@ module.exports = async( id, newParams, oldParams ) => {
                 firstPassIndicesQueries.push( remove );
 
                 // Query for building the new index
-                let create = createIndex( newIndex[1], q.Class( newParams.ClassName ), false );
+                let create = createIndex( newIndex[1], q.Collection( newParams.CollectionName ), false );
 
                 // Push to array
                 secondPassIndicesQueries.push( create );
@@ -151,7 +151,7 @@ module.exports = async( id, newParams, oldParams ) => {
         if( !oldIndex ){
 
             // This must be a new index
-            firstPassIndicesQueries.push( createIndex( newIndex[1], q.Class( oldParams.ClassName ), false ) );
+            firstPassIndicesQueries.push( createIndex( newIndex[1], q.Collection( oldParams.CollectionName ), false ) );
 
             indicesNew.push( newIndex[1].Name );
 
@@ -159,13 +159,13 @@ module.exports = async( id, newParams, oldParams ) => {
 
     }
 
-    // We push class rename into the first pass queries at the end
+    // We push collection rename into the first pass queries at the end
 
     // And execute
     await client.query(
         q.Do(
             ...firstPassIndicesQueries,
-            classRename
+            collectionRename
         )
     );
 
@@ -184,8 +184,8 @@ module.exports = async( id, newParams, oldParams ) => {
 
     // Build a response object
     let response = {};
-    if( classRename ){
-        response['Renamed Class'] = `From ${oldParams.ClassName} to ${newParams.ClassName}`;
+    if( collectionRename ){
+        response['Renamed Collection'] = `From ${oldParams.CollectionName} to ${newParams.CollectionName}`;
     }
     if( indicesStayedSame.length > 0 ){
         response['Indices Stayed the Same'] = indicesStayedSame;
@@ -205,7 +205,7 @@ module.exports = async( id, newParams, oldParams ) => {
 
 
     return {
-        PhysicalResourceId: 'FaunaDB Class and Index',
+        PhysicalResourceId: 'FaunaDB Collection and Index',
         FnGetAttrsDataObj: {
             Response: JSON.stringify(response)
         }

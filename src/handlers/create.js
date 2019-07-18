@@ -5,8 +5,8 @@ module.exports = async( params ) => {
 
     const { client, q } = await connect( params );
 
-    // Pull class name from param
-    const className = params.ClassName;
+    // Pull collection name from param
+    const CollectionName = params.CollectionName;
 
     // Fetch the indices (In create we can ignore the keys)
     const indices = Object.values( params.Indices );
@@ -18,7 +18,7 @@ module.exports = async( params ) => {
     // Iterate through indices from params
     for( let index of indices ){
 
-        let query = createIndex( index, q.Var( 'classRef' ), true );
+        let query = createIndex( index, q.Var( 'collectionRef' ), true );
 
         // Add the built query into the array
         indexQueryArray.push( query );
@@ -30,12 +30,12 @@ module.exports = async( params ) => {
 
     try{
         await client.query(
-            // Wrapped in a Let expression such that the class and all indices are created, or the whole thing fails
+            // Wrapped in a Let expression such that the collection and all indices are created, or the whole thing fails
             q.Let(
                 {
                     // Create the Class, then fetch its Ref
-                    classRef: q.Select( 'ref', q.CreateClass({
-                        name: className
+                    collectionRef: q.Select( 'ref', q.CreateCollection({
+                        name: CollectionName
                     }))
                 },
 
@@ -54,10 +54,10 @@ module.exports = async( params ) => {
     // TODO Placeholder Return
     return {
         // Returning this physical resource ID because Fauna doesn't need replacement for anything
-        PhysicalResourceId: 'FaunaDB Class and Index',
+        PhysicalResourceId: 'FaunaDB Collection and Index',
         FnGetAttrsDataObj: {
             Response: JSON.stringify({
-                ClassCreated: className,
+                CollectionCreated: CollectionName,
                 IndicesCreated: builtIndices
             })
         }
