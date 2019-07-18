@@ -27,7 +27,7 @@ module.exports = {
     properties: {
 
         // Class Name
-        ClassName: {
+        CollectionName: {
             type: 'string'
         },
 

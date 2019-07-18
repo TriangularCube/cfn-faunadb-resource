@@ -7,16 +7,16 @@ module.exports = async( id, params ) => {
     // Guard against creation failures
     const res = await client.query(
         q.Exists(
-            q.Class( params.ClassName )
+            q.Collection( params.CollectionName )
         )
     );
 
-    // The class doesn't exist, which means Create failed
+    // The collection doesn't exist, which means Create failed
     if( !res ){
         return {
-            PhysicalResourceId: 'FaunaDB Class and Index',
+            PhysicalResourceId: 'FaunaDB Collection and Index',
             FnGetAttrsDataObj: {
-                Response: 'No class exists of that name, probably Create failed'
+                Response: 'No Collection exists of that name, probably Create failed'
             }
         }
     }
@@ -42,15 +42,15 @@ module.exports = async( id, params ) => {
         q.Do(
             ...indexQueryArray,
             q.Delete(
-                q.Class( params.ClassName )
+                q.Collection( params.CollectionName )
             )
         )
     );
 
     return {
-        PhysicalResourceId: 'FaunaDB Class and Index',
+        PhysicalResourceId: 'FaunaDB Collection and Index',
         FnGetAttrsDataObj: {
-            Response: 'Class and indices deleted'
+            Response: 'Collection and indices deleted'
         }
     }
 
