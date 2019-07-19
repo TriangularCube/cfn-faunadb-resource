@@ -1,4 +1,4 @@
-service: faunadb-class-lambda
+service: faunadb-collection-lambda
 
 plugins:
     - serverless-deployment-bucket
@@ -61,4 +61,4 @@ resources:
             Export:
                 # This is the export name for the Custom Resource Lambda
                 # Change this to what you want to reference from other stacks with Fn::ImportValue
-                Name: fauna-class-lambda-arn
+                Name: fauna-collection-lambda-arn
