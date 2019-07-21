@@ -19,7 +19,7 @@
     "homepage": "https://github.com/TriangularCube/cfn-faunadb-resource#readme",
     "devDependencies": {
         "fauna-shell": "^0.9.3",
-        "serverless": "^1.48.1",
+        "serverless": "^1.48.2",
         "serverless-deployment-bucket": "^1.1.0",
         "serverless-plugin-include-dependencies": "^3.2.1",
         "serverless-pseudo-parameters": "^2.4.0"
