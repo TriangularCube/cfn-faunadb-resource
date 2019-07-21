@@ -233,7 +233,8 @@ Unique: false
 ```
 
 # TODO
-Better documentation
+- Handle errored stack updates better
+- Better documentation
 
 # Caveat
 
