@@ -23,7 +23,7 @@ provider:
             Action: 'ssm:GetParameter'
             Resource:
                 # This allows the Lambda to access any key for the account this stack is deployed with
-                - arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/*
+                - arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/fauna/*
 
         # Allow get KMS key for decrypt
         -   Effect: 'Allow'
