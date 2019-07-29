@@ -1,3 +1,12 @@
+# Potentially Obsolete
+This library is probably rendered obsolete by the introduction of FaunaDB's
+GraphQL API, as that takes care of creating and updating Collections, indices,
+and other such tasks.  
+  
+
+
+---
+
 # FaunaDB CloudFormation custom resource
 
 This project is a Lambda function for creating a Collections and Indices (in the
