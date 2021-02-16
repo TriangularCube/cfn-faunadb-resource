@@ -8,15 +8,15 @@ module.exports = async( params ) => {
     // Pull collection name from param
     const CollectionName = params.CollectionName;
 
-    // Fetch the indices (In create we can ignore the keys)
-    const indices = Object.values( params.Indices );
+    // Fetch the indexes (In create we can ignore the keys)
+    const indexes = Object.values( params.Indexes );
 
     // Start with an empty array of Index creation queries
     let indexQueryArray = [];
-    let builtIndices = [];
+    let builtIndexes = [];
 
-    // Iterate through indices from params
-    for( let index of indices ){
+    // Iterate through indexes from params
+    for( let index of indexes ){
 
         let query = createIndex( index, q.Var( 'collectionRef' ), true );
 
@@ -24,13 +24,13 @@ module.exports = async( params ) => {
         indexQueryArray.push( query );
 
         // Add to the list the built index name for output
-        builtIndices.push( index.Name );
+        builtIndexes.push( index.Name );
 
     }
 
     try{
         await client.query(
-            // Wrapped in a Let expression such that the collection and all indices are created, or the whole thing fails
+            // Wrapped in a Let expression such that the collection and all indexes are created, or the whole thing fails
             q.Let(
                 {
                     // Create the Class, then fetch its Ref
@@ -58,7 +58,7 @@ module.exports = async( params ) => {
         FnGetAttrsDataObj: {
             Response: JSON.stringify({
                 CollectionCreated: CollectionName,
-                IndicesCreated: builtIndices
+                IndexesCreated: builtIndexes
             })
         }
     }

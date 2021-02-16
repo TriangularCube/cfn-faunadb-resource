@@ -22,39 +22,39 @@ module.exports = async( id, newParams, oldParams ) => {
         )
     }
 
-    // Next find differences in Indices
+    // Next find differences in indexes
 
-    let firstPassIndicesQueries = [];
-    let secondPassIndicesQueries = [];
+    let firstPassIndexesQueries = [];
+    let secondPassIndexesQueries = [];
 
-    let newIndices = [];
-    let oldIndices = [];
+    let newIndexes = [];
+    let oldIndexes = [];
 
-    // Fetch indices if any exist
-    if( newParams.Indices ){
-        newIndices = Object.entries( newParams.Indices );
+    // Fetch indexes if any exist
+    if( newParams.Indexes ){
+        newIndexes = Object.entries( newParams.Indexes );
     }
 
-    if( oldParams.Indices ){
-        oldIndices = Object.entries( oldParams.Indices );
+    if( oldParams.Indexes ){
+        oldIndexes = Object.entries( oldParams.Indexes );
     }
 
     // Convenience arrays for response
-    let indicesStayedSame = [];
-    let indicesUpdated = [];
-    let indicesRebuilt = [];
-    let indicesNew = [];
-    let indicesDeleted = [];
+    let indexesStayedSame = [];
+    let indexesUpdated = [];
+    let indexesRebuilt = [];
+    let indexesNew = [];
+    let indexesDeleted = [];
 
-    // console.log( oldIndices );
+    // console.log( oldIndexes );
 
-    // First iterate through old indices and see if they've changed or were removed
-    for( let oldIndex of oldIndices ){
+    // First iterate through old indexes and see if they've changed or were removed
+    for( let oldIndex of oldIndexes ){
 
         // console.log( oldIndex );
 
         // Check each index against the new list
-        let newIndex = newIndices.find( (element) => element[0] === oldIndex[0] );
+        let newIndex = newIndexes.find( (element) => element[0] === oldIndex[0] );
 
         if( newIndex ){
 
@@ -71,16 +71,16 @@ module.exports = async( id, newParams, oldParams ) => {
                 );
 
                 // Push to the array
-                firstPassIndicesQueries.push( remove );
+                firstPassIndexesQueries.push( remove );
 
                 // Query for building the new index
                 let create = createIndex( newIndex[1], q.Collection( newParams.CollectionName ), false );
 
                 // Push to array
-                secondPassIndicesQueries.push( create );
+                secondPassIndexesQueries.push( create );
 
                 // Convenience for output
-                indicesRebuilt.push( newIndex[1].Name );
+                indexesRebuilt.push( newIndex[1].Name );
 
             } else {
 
@@ -116,13 +116,13 @@ module.exports = async( id, newParams, oldParams ) => {
                         updateObject
                     );
 
-                    firstPassIndicesQueries.push( query );
-                    indicesUpdated.push( newIndex[0] );
+                    firstPassIndexesQueries.push( query );
+                    indexesUpdated.push( newIndex[0] );
 
                 } else {
 
                     // Index stayed the same
-                    indicesStayedSame.push( oldIndex[1].Name );
+                    indexesStayedSame.push( oldIndex[1].Name );
 
                 }
 
@@ -135,25 +135,25 @@ module.exports = async( id, newParams, oldParams ) => {
                 q.Index( oldIndex[1].Name )
             );
 
-            firstPassIndicesQueries.push( deleteQuery );
-            indicesDeleted.push( oldIndex[1].Name );
+            firstPassIndexesQueries.push( deleteQuery );
+            indexesDeleted.push( oldIndex[1].Name );
 
         }
 
     }
 
-    for( let newIndex of newIndices ){
+    for( let newIndex of newIndexes ){
 
-        // See if the new index exists in the old indices
-        let oldIndex = oldIndices.find( ( element ) => element[0] === newIndex[0] );
+        // See if the new index exists in the old indexes
+        let oldIndex = oldIndexes.find( ( element ) => element[0] === newIndex[0] );
 
         // If not
         if( !oldIndex ){
 
             // This must be a new index
-            firstPassIndicesQueries.push( createIndex( newIndex[1], q.Collection( oldParams.CollectionName ), false ) );
+            firstPassIndexesQueries.push( createIndex( newIndex[1], q.Collection( oldParams.CollectionName ), false ) );
 
-            indicesNew.push( newIndex[1].Name );
+            indexesNew.push( newIndex[1].Name );
 
         }
 
@@ -164,19 +164,19 @@ module.exports = async( id, newParams, oldParams ) => {
     // And execute
     await client.query(
         q.Do(
-            ...firstPassIndicesQueries,
+            ...firstPassIndexesQueries,
             collectionRename
         )
     );
 
     // If a second passe exist, wait for 60s, then execute
-    if( secondPassIndicesQueries.length > 0 ){
+    if( secondPassIndexesQueries.length > 0 ){
 
         await sleep( 60 * 1000 );
 
         await client.query(
             q.Do(
-                ...secondPassIndicesQueries
+                ...secondPassIndexesQueries
             )
         )
 
@@ -187,20 +187,20 @@ module.exports = async( id, newParams, oldParams ) => {
     if( collectionRename ){
         response['Renamed Collection'] = `From ${oldParams.CollectionName} to ${newParams.CollectionName}`;
     }
-    if( indicesStayedSame.length > 0 ){
-        response['Indices Stayed the Same'] = indicesStayedSame;
+    if( indexesStayedSame.length > 0 ){
+        response['Indexes Stayed the Same'] = indexesStayedSame;
     }
-    if( indicesUpdated.length > 0){
-        response['Indices Updated'] = indicesUpdated;
+    if( indexesUpdated.length > 0){
+        response['Indexes Updated'] = indexesUpdated;
     }
-    if( indicesRebuilt.length > 0){
-        response['Indices Rebuilt'] = indicesRebuilt;
+    if( indexesRebuilt.length > 0){
+        response['Indexes Rebuilt'] = indexesRebuilt;
     }
-    if( indicesNew.length > 0){
-        response['New indices added'] = indicesNew;
+    if( indexesNew.length > 0){
+        response['New indexes added'] = indexesNew;
     }
-    if( indicesDeleted.length > 0){
-        response['Indices Deleted'] = indicesDeleted;
+    if( indexesDeleted.length > 0){
+        response['Indexes Deleted'] = indexesDeleted;
     }
 
 

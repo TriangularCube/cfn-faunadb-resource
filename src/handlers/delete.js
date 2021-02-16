@@ -23,13 +23,13 @@ module.exports = async( id, params ) => {
 
     let indexQueryArray = [];
 
-    // If the resource had any indices
-    if( params.Indices ){
+    // If the resource had any indexes
+    if( params.Indexes ){
 
-        // Fetch the indices as an array
-        const indices = Object.values( params.Indices );
+        // Fetch the indexes as an array
+        const indexes = Object.values( params.Indexes );
 
-        for( let index of indices ){
+        for( let index of indexes ){
             indexQueryArray.push(
                 q.Delete(
                     q.Index( index.Name )
@@ -50,7 +50,7 @@ module.exports = async( id, params ) => {
     return {
         PhysicalResourceId: 'FaunaDB Collection and Index',
         FnGetAttrsDataObj: {
-            Response: 'Collection and indices deleted'
+            Response: 'Collection and indexes deleted'
         }
     }
 

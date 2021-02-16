@@ -1,15 +1,6 @@
-# Potentially Obsolete
-This library is probably rendered obsolete by the introduction of FaunaDB's
-GraphQL API, as that takes care of creating and updating Collections, indices,
-and other such tasks.  
-  
-
-
----
-
 # FaunaDB CloudFormation custom resource
 
-This project is a Lambda function for creating a Collections and Indices (in the
+This project is a Lambda function for creating a Collections and Indexes (in the
 collection) in FaunaDB as a CloudFormation Custom Resource, as well as a Serverless
 Template for deploying it to AWS.
 
@@ -54,7 +45,7 @@ Resources:
                 Fn::ImportValue: my-exported-resource-name
 ```
 
-This resource will create one collection, and any number of indices on the collection.
+This resource will create one collection, and any number of indexes on the collection.
 Here's an example of how to format the template
 ```yaml
 Properties:
@@ -66,8 +57,8 @@ Properties:
     # FaunaDB Key parameter
     KeyParameter: KeyParam
     
-    # Indices to be created on this Collection
-    Indices:
+    # Indexes to be created on this Collection
+    Indexes:
         nameTerm:
             Name: users_by_name
             Terms:
@@ -135,11 +126,11 @@ KeyParameter: KeyParam
 KeyParameterSecure: SecureKey
 ```
 
-#### Indices
-While not required, indices do make collections more useful.
+#### Indexes
+While not required, indexes do make collections more useful.
 Takes an object with index descriptions to create the index on the Collection.
 ```yaml
-Indices:
+Indexes:
     index1:
         ... # Index description 1
     index2:
@@ -153,7 +144,7 @@ Each index description needs the following:
 The property name of each index is not actually used by FaunaDB, but is needed by
 this package to keep track of which index has updated, and which are added/deleted
 ```yaml
-Indices:
+Indexes:
     IndexProperty1:
         ...
     IndexProperty2:
@@ -199,7 +190,7 @@ Terms:
       transform: casefold
 ```
 
-_Note: FaunaDB dictates that indices cannot change its Terms, Values, or
+_Note: FaunaDB dictates that indexes cannot change its Terms, Values, or
 Partition fields. Any updates to these fields will trigger a replacement of
 the index._
 
@@ -223,7 +214,7 @@ Values:
       reverse: true
 ```
 
-_Note: FaunaDB dictates that indices cannot change its Terms, Values, or
+_Note: FaunaDB dictates that indexes cannot change its Terms, Values, or
 Partition fields. Any updates to these fields will trigger a replacement of
 the index._
 

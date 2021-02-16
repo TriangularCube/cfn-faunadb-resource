@@ -46,8 +46,8 @@ module.exports = {
             type: 'string'
         },
 
-        // Any indices specified
-        Indices: {
+        // Any indexes specified
+        Indexes: {
 
             // Type is an Array
             type: 'object',
